@@ -22,7 +22,6 @@ stacks_backup <- stacks
 
 # Parsing the orders
 input_orders <- input[-(1:(which(input == "")))]
-regex_parse <- "move (\\d+) from (\\d+) to (\\d+)"
 
 parsed_orders <- tibble(raw = input_orders) %>%
   mutate(raw = str_replace_all(raw, "move |from |to ","")) %>%
