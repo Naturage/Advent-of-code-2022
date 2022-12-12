@@ -8,7 +8,7 @@ library(stringi)
 
 get_input <- function(day){
   
-  if(exists(here(paste0("day ",day), "data","input.rds"))){
+  if(file.exists(here(paste0("Day ",day), "Data","input.rds"))){
     input <- read_rds(here(paste0("day ",day), "data","input.rds"))
   } else {
     suppressWarnings(session_id <- readLines(here("session.txt")))
