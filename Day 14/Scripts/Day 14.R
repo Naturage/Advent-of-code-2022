@@ -73,3 +73,4 @@ while(TRUE){
 }
 
 (ans <- sum(map == 2)+1) # as origin is outside the array
+

@@ -63,7 +63,3 @@ while(ttr[start_pos] == -1){
 
 # P2
 (min(ttr[which(input %in% c("S","a"))] %>% .[. > 0]))
-
-ptm <- proc.time()
-f()
-ptm-proc.time()
