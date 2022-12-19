@@ -18,6 +18,7 @@ ans <- 0
 
 for (i in 1:nrow(input_clean)){
   blueprint <- input_clean %>% slice(i)
+  max_ore_robots <- max(blueprint$clay_rob_ore,blueprint$obs_rob_ore,blueprint$geo_rob_ore)
   
   geo_max <- 0
   
@@ -31,7 +32,7 @@ for (i in 1:nrow(input_clean)){
     # build order: ore robot
     # prereq: less ore robots than can use in a turn.
     scenarios_ore <- scenarios %>%
-      filter(ore_robots < max(blueprint$clay_rob_ore,blueprint$obs_rob_ore,blueprint$geo_rob_ore)) %>%
+      filter(ore_robots < max_ore_robots) %>%
       mutate(eta = ifelse(ore > blueprint$ore_rob_ore, 1, ceiling((blueprint$ore_rob_ore - ore)/ore_robots) + 1)) %>%
       mutate(time = time + eta,
              ore  = ore  + eta * ore_robots - blueprint$ore_rob_ore,
@@ -47,6 +48,7 @@ for (i in 1:nrow(input_clean)){
     
     # build order: clay robot
     scenarios_clay <- scenarios %>%
+      filter(clay_robots < blueprint$obs_rob_clay) %>%
       mutate(eta = ifelse(ore > blueprint$clay_rob_ore, 1, ceiling((blueprint$clay_rob_ore - ore)/ore_robots) + 1)) %>%
       mutate(time = time + eta,
              ore  = ore  + eta * ore_robots - blueprint$clay_rob_ore,
@@ -138,6 +140,7 @@ ans <- 1
 
 for (i in 1:3){
   blueprint <- input_clean %>% slice(i)
+  max_ore_robots <- max(blueprint$clay_rob_ore,blueprint$obs_rob_ore,blueprint$geo_rob_ore)
   
   geo_max <- 0
   
@@ -151,7 +154,7 @@ for (i in 1:3){
     # build order: ore robot
     # prereq: less ore robots than max ore needed a minute.
     scenarios_ore <- scenarios %>%
-      filter(ore_robots < max(blueprint$clay_rob_ore,blueprint$obs_rob_ore,blueprint$geo_rob_ore)) %>%
+      filter(ore_robots < max_ore_robots) %>%
       mutate(eta = ifelse(ore > blueprint$ore_rob_ore, 1, ceiling((blueprint$ore_rob_ore - ore)/ore_robots) + 1)) %>%
       mutate(time = time + eta,
              ore  = ore  + eta * ore_robots - blueprint$ore_rob_ore,
@@ -167,6 +170,7 @@ for (i in 1:3){
     
     # build order: clay robot
     scenarios_clay <- scenarios %>%
+      filter(clay_robots < blueprint$obs_rob_clay) %>%
       mutate(eta = ifelse(ore > blueprint$clay_rob_ore, 1, ceiling((blueprint$clay_rob_ore - ore)/ore_robots) + 1)) %>%
       mutate(time = time + eta,
              ore  = ore  + eta * ore_robots - blueprint$clay_rob_ore,
