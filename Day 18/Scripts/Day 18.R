@@ -33,7 +33,8 @@ nearby2 <- tibble(move_x = c(1,-1,0,0,0,0,0),
                   move_y = c(0,0,1,-1,0,0,0),
                   move_z = c(0,0,0,0,1,-1,0))
 
-outside <- expand_grid(x = c(-1,21),y=c(-1,21),z=c(-1,21))
+outside <- expand_grid(x = c(-1:21),y=c(-1:21),z=c(-1:21)) %>%
+  filter(x %in% c(1:21) & y %in% c(1:21) & z %in% c(1:21))
 outside_size <- nrow(outside)
 
 while (TRUE){
