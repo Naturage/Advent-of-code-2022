@@ -37,16 +37,18 @@ options(digits = 22)
 (ans <- finalised %>% filter(var == "root") %>% pull(final_value))
 
 # P2
-input %>% filter(var == "humn")
-
 worked_on <- input %>% 
-  mutate(op = ifelse(var == "root","-",op)) %>%
-  filter(var != "humn")
+  filter(!var %in% c("humn","root"))
 
 finalised <- tibble()
 
-while (nrow(worked_on) >72){ #checked by hand this is where it stops.
-  finalised <- worked_on %>% 
+last_size <- nrow(worked_on)+1
+
+while (nrow(worked_on) < last_size){
+  
+  last_size <- nrow(worked_on)
+  
+    finalised <- worked_on %>% 
     filter(!is.na(final_value)) %>%
     select(var, final_value) %>%
     bind_rows(finalised)
@@ -75,7 +77,7 @@ worked_on_2 <- worked_on %>%
            case_when(
              op %in% c("+","*") ~ var,
              is.na(op_var1_value) ~ var,
-             TRUE ~ op_var2
+             TRUE ~ op_var1
            ),
          op_var2_new = 
            case_when(
@@ -97,12 +99,14 @@ worked_on_2 <- worked_on %>%
          op_var2 = op_var2_new,
          op = op_new)
 
+equality <- input %>% filter(var == "root")
+eq_value <- finalised %>% filter(var == equality$op_var1 | var == equality$op_var2) %>% pull(final_value)
+extra_value <- tibble(var = c(equality$op_var1, equality$op_var2),
+                      final_value = c(eq_value,eq_value)) %>%
+  anti_join(finalised, by = "var")
+
 finalised <- finalised %>%
-  add_row(worked_on %>% 
-            filter(var == "root") %>% 
-            mutate(final_value = coalesce(op_var1_value,op_var2_value),
-                   var = ifelse(is.na(op_var1_value),op_var1,op_var2)) %>%
-            select(var,final_value))
+  add_row(extra_value)
 
 worked_on <- worked_on_2 %>% mutate(final_value = NA)
 
@@ -120,10 +124,12 @@ while (nrow(worked_on) > 0){
               by = c("op_var1" = "var")) %>%
     left_join(finalised %>% 
                 rename(op_var2_value = final_value), 
-              by = c("op_var2" = "var")) %>%
+              by = c("op_var2" = "var")) %>% 
     mutate(final_value = case_when(
       op == "+" ~ op_var1_value + op_var2_value,
       op == "-" ~ op_var1_value - op_var2_value,
       op == "*" ~ op_var1_value * op_var2_value,
       op == "/" ~ op_var1_value / op_var2_value))
 }
+
+(ans <- finalised %>% filter(var == "humn") %>% pull(final_value))
